@@ -19,7 +19,6 @@
       specialArgs = { inherit inputs; };
       modules = [
         ./configuration.nix
-        /home/clhickey/osm-biking-filter/mapnik/flake.nix
       ];
     };
   };
