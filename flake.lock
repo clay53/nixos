@@ -239,12 +239,15 @@
       }
     },
     "mapnix": {
+      "inputs": {
+        "oldNixpkgs": "oldNixpkgs"
+      },
       "locked": {
-        "lastModified": 1744186434,
-        "narHash": "sha256-N7otnO9pwhZIb1iil7p4r0AX7koADMNMbb//F83Zn5A=",
+        "lastModified": 1744313990,
+        "narHash": "sha256-X7grSXcvvJ8zJhtcM3bym9eUge1Gkedzm/aUUdpzGps=",
         "owner": "clay53",
         "repo": "mapnix",
-        "rev": "88e62ecab79ae43072335efa6fdccdc7484250c0",
+        "rev": "49717b05440580f67a04762dea6f3fbff1d8ed1c",
         "type": "github"
       },
       "original": {
@@ -357,6 +360,22 @@
       "original": {
         "owner": "NuschtOS",
         "repo": "search",
+        "type": "github"
+      }
+    },
+    "oldNixpkgs": {
+      "locked": {
+        "lastModified": 1701282334,
+        "narHash": "sha256-MxCVrXY6v4QmfTwIysjjaX0XUhqBbxTWWB4HXtDYsdk=",
+        "owner": "NixOs",
+        "repo": "nixpkgs",
+        "rev": "057f9aecfb71c4437d2b27d3323df7f93c010b7e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOs",
+        "ref": "23.11",
+        "repo": "nixpkgs",
         "type": "github"
       }
     },
