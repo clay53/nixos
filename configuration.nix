@@ -8,7 +8,13 @@ in
     [
       ./hardware-configuration.nix
       "${inputs.home-manager}/nixos"
+      inputs.mapnix.nixosModules.default
     ];
+  
+  services.mapnix = {
+    openstreetmap-carto-src = inputs.osm-bikeability;
+    enable = true;
+  };
 
   boot = {
     loader = {
@@ -157,7 +163,6 @@ in
       jdk8
       slack
       inputs.penn-nix.packages.x86_64-linux.waypoint-client
-      #vscode-fhs
       inputs.cnvim.packages.x86_64-linux.default
       osu-lazer-bin
       wl-clipboard
@@ -166,6 +171,7 @@ in
       element-desktop
       gh
       vscode-fhs
+      code-cursor
       firefox
       popsicle
       kdePackages.kget

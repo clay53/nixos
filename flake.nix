@@ -10,9 +10,13 @@
       url = "github:clay53/cnvim";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    #mapnix = {
-    #  url = "path:/home/clhickey/osm-biking-filter/mapnik/flake.nix";
-    #};
+    mapnix = {
+      url = "github:clay53/mapnix";
+    };
+    osm-bikeability = {
+      url = "github:clay53/osm-bikeability";
+      flake = false;
+    };
   };
   outputs = { self, nixpkgs, ... }@inputs: {
     nixosConfigurations.clhickey-nixos = nixpkgs.lib.nixosSystem {
