@@ -1,7 +1,9 @@
-{ inputs, pkgs, options, ... }:
+{ inputs, pkgs, options, config, ... }:
 let
   hostName = "clhickey-nixos";
   username = "clhickey";
+  wireguardInterface = "wg0";
+  wireguardIP = "10.100.0.3";
 in
 {
   imports =
@@ -13,7 +15,7 @@ in
   
   services.mapnix = {
     openstreetmap-carto-src = inputs.osm-bikeability;
-    enable = true;
+    enable = false;
   };
 
   boot = {
@@ -34,6 +36,35 @@ in
   networking = {
     inherit hostName;
     networkmanager.enable = true;
+    firewall = {
+      interfaces = {
+        ${wireguardInterface} = {
+          allowedUDPPorts = [
+            config.networking.wireguard.interfaces.${wireguardInterface}.listenPort
+          ];
+        };
+      };
+    };
+    wireguard = {
+      enable = true;
+      interfaces = {
+        ${wireguardInterface} = {
+          ips = [ "${wireguardIP}/24" ];
+          listenPort = 51820;
+
+          privateKeyFile = "/home/${username}/wireguard-keys/private";
+
+          peers = [
+            {
+              publicKey = "raOzdkhoag+sN2/KXz18F9ncmeTWhdmPJxQJkqsJ7FI=";
+              allowedIPs = [ "10.100.0.0/24" ];
+              endpoint = "50.116.49.95:51820";
+              persistentKeepalive = 25;
+            }
+          ];
+        };
+      };
+    };
   };
 
   time.timeZone = "America/New_York";
@@ -82,6 +113,7 @@ in
       alsa.support32Bit = true;
       pulse.enable = true;
     };
+    gvfs.enable = true; # for sftp
   };
 
   virtualisation = {
@@ -93,6 +125,10 @@ in
         enable = true;
         setSocketVariable = true;
       };
+    };
+    # For kubernetes
+    containerd = {
+      enable = true;
     };
   };
 
@@ -182,9 +218,18 @@ in
       alacritty
       pcmanfm
       kdePackages.okular
+      prismlauncher
+      kdePackages.ark
+      wireguard-tools
+      # For pennlabs
+      kind
+      kubectl
+      awscli2
+      k9s
     ];
     sessionVariables = {
       EDITOR = "${inputs.cnvim.packages.x86_64-linux.default}/bin/nvim";
+      CONTAINERD_ENABLE_DEPRECATED_PULL_SCHEMA_1_IMAGE = 1;
     };
   };
 
@@ -332,10 +377,12 @@ in
       };
     };
 
-    services.hyprpolkitagent.enable = true;
+    services = {
+      hyprpolkitagent.enable = true;
 
-    services.hypridle = {
-      enable = true;
+      hypridle = {
+        enable = true;
+      };
     };
 
     programs.waybar = {
