@@ -8,7 +8,7 @@
     penn-nix.url = "github:clay53/penn-nix";
     cnvim = {
       url = "github:clay53/cnvim";
-      inputs.nixpkgs.follows = "nixpkgs";
+      #inputs.nixpkgs.follows = "nixpkgs";
     };
     mapnix = {
       url = "github:clay53/mapnix";
