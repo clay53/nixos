@@ -1,22 +1,18 @@
-{ inputs, pkgs, options, config, ... }:
-let
-  hostName = "clhickey-nixos";
-  username = "clhickey";
-  wireguardInterface = "wg0";
-  wireguardIP = "10.100.0.3";
-in
+{ inputs, pkgs, options, config, lib, ... }:
 {
   imports =
     [
       ./hardware-configuration.nix
       "${inputs.home-manager}/nixos"
       inputs.mapnix.nixosModules.default
+      ./cos.nix
+      ./docker-kubernetes.nix
+      ./mainWireguard.nix
+      ./hyprland.nix
     ];
-  
-  services.mapnix = {
-    openstreetmap-carto-src = inputs.osm-bikeability;
-    enable = false;
-  };
+
+  cos.username = "clhickey";
+  cos.hostName = "clhickey-nixos";
 
   boot = {
     loader = {
@@ -30,40 +26,6 @@ in
       emulatedSystems = [
         "aarch64-linux"
       ];
-    };
-  };
-
-  networking = {
-    inherit hostName;
-    networkmanager.enable = true;
-    firewall = {
-      interfaces = {
-        ${wireguardInterface} = {
-          allowedUDPPorts = [
-            config.networking.wireguard.interfaces.${wireguardInterface}.listenPort
-          ];
-        };
-      };
-    };
-    wireguard = {
-      enable = true;
-      interfaces = {
-        ${wireguardInterface} = {
-          ips = [ "${wireguardIP}/24" ];
-          listenPort = 51820;
-
-          privateKeyFile = "/home/${username}/wireguard-keys/private";
-
-          peers = [
-            {
-              publicKey = "raOzdkhoag+sN2/KXz18F9ncmeTWhdmPJxQJkqsJ7FI=";
-              allowedIPs = [ "10.100.0.0/24" ];
-              endpoint = "50.116.49.95:51820";
-              persistentKeepalive = 25;
-            }
-          ];
-        };
-      };
     };
   };
 
@@ -82,67 +44,75 @@ in
       LC_TELEPHONE = "en_US.UTF-8";
       LC_TIME = "en_US.UTF-8";
     };
-    inputMethod = {
-      enable = true;
-      type = "fcitx5";
-      fcitx5 = {
-        waylandFrontend = true;
-	    addons = with pkgs; [
-          fcitx5-gtk
-          fcitx5-configtool
-          fcitx5-mozc
-        ];
-      };
-    };
   };
 
+  networking = {
+    hostName = config.cos.hostName;
+    networkmanager.enable = true;
+  };
+  
+  services.mapnix = {
+    openstreetmap-carto-src = inputs.osm-bikeability;
+    enable = false;
+  };
+
+  cos.mainWireguard = {
+    enable = true;
+    ip = "10.100.0.3";
+    privateKeyFile = "/home/${config.cos.username}/wireguard-keys/private";
+  };
+
+  cos.hyprland = {
+    enable = true;
+    wallpaper = builtins.toString ./Snapchat-941139056.jpg;
+  };
+
+  hardware.bluetooth.enable = true;
+
+  # For languini
+  networking.firewall.interfaces.${config.cos.mainWireguard.interface}.allowedTCPPorts = [
+    8000
+    8080
+  ];
+
   services = {
-    xserver = {
+    openssh = {
       enable = true;
-      xkb = {
-        layout = "us";
-        variant = "";
+      settings = {
+        PasswordAuthentication = true;
+        AllowUsers = null;
       };
+      listenAddresses = [
+        {
+          port = 22;
+          addr = config.cos.mainWireguard.ip;
+        }
+      ];
     };
-    displayManager.sddm.enable = true;
-    printing.enable = true;
-    pulseaudio.enable = false;
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-    };
-    gvfs.enable = true; # for sftp
   };
 
   virtualisation = {
-    libvirtd.enable = true;
-    spiceUSBRedirection.enable = true;
-    docker = {
+    waydroid = {
+      enable = false;
+    };
+    libvirtd = {
       enable = true;
-      rootless = {
-        enable = true;
-        setSocketVariable = true;
+      qemu = {
+        swtpm.enable = true;
+        ovmf.enable = true;
+        ovmf.packages = [ pkgs.OVMFFull.fd ];
       };
     };
-    # For kubernetes
-    containerd = {
+    virtualbox.host = {
       enable = true;
+      enableKvm = true;
+      addNetworkInterface = false;
+      enableExtensionPack = true;
     };
+    spiceUSBRedirection.enable = true;
   };
 
-  hardware = {
-    bluetooth.enable = true;
-    opentabletdriver.enable = true;
-  };
-
-  security = {
-    rtkit.enable = true;
-    polkit.enable = true;
-  };
-
-  users.users.${username} = {
+  users.users.${config.cos.username} = {
     isNormalUser = true;
     description = "Clayton Lopez Hickey";
     extraGroups = [
@@ -162,6 +132,10 @@ in
     "nix-command"
     "flakes"
   ];
+  nix.settings.trusted-users = [
+    "root"
+    "@wheel"
+  ];
 
   environment = {
     systemPackages = with pkgs; [
@@ -177,9 +151,8 @@ in
       htop
       helvum
       libreoffice-fresh
-      obsidian
       anki-bin
-      gimp
+      gimp3
       audacity
       ffmpeg
       zoom-us
@@ -201,35 +174,31 @@ in
       inputs.penn-nix.packages.x86_64-linux.waypoint-client
       inputs.cnvim.packages.x86_64-linux.default
       osu-lazer-bin
-      wl-clipboard
       thunderbird-bin
       itch
       element-desktop
       gh
-      vscode-fhs
       code-cursor
       firefox
       popsicle
-      kdePackages.kget
       nixfmt-rfc-style
       graphviz
-      wdisplays
-      pwvucontrol
       alacritty
-      pcmanfm
-      kdePackages.okular
       prismlauncher
-      kdePackages.ark
-      wireguard-tools
-      # For pennlabs
-      kind
-      kubectl
-      awscli2
-      k9s
+      google-chrome
+      trilium-next-desktop
+      joplin-desktop
+      sshfs
+      unityhub
+      man-pages
+      man-pages-posix
+      vulkan-tools
+      wireshark
+      dotnetCorePackages.sdk_9_0_1xx-bin # for unit dev
+      vscode-fhs
     ];
     sessionVariables = {
       EDITOR = "${inputs.cnvim.packages.x86_64-linux.default}/bin/nvim";
-      CONTAINERD_ENABLE_DEPRECATED_PULL_SCHEMA_1_IMAGE = 1;
     };
   };
 
@@ -260,6 +229,20 @@ in
       enable = true;
       package = pkgs.jdk;
     };
+    #vscode = {
+    #  enable = true;
+    #  package = pkgs.vscode-fhs;
+    #  extensions = with pkgs.vscode-extensions; [
+    #    # For Unity & C#
+    #    visualstudiotoolsforunity.vstuc
+    #    ms-dotnettools.csdevkit
+    #    ms-dotnettools.vscode-dotnet-runtime
+    #    ms-dotnettools.csharp
+
+    #    # Personalization
+    #    vscodevim.vim
+    #  ];
+    #};
     nix-ld = {
       enable = true;
       libraries = options.programs.nix-ld.libraries.default ++ [
@@ -273,204 +256,16 @@ in
     };
     virt-manager.enable = true;
     ladybird = {
-        enable = true;
+      enable = true;
     };
     git = {
-        enable = true;
-    };
-    gnupg.agent = {
-        enable = true;
-    };
-    hyprland = {
       enable = true;
     };
   };
 
-  home-manager.users.${username} = { pkgs, ... }: {
-    wayland.windowManager.hyprland = {
-      enable = true;
-      plugins = [
-        #pkgs.hyprlandPlugins.hy3
-      ];
-      settings = {
-        env = [
-          # Base on https://wiki.hyprland.org/Configuring/Environment-variables/
-          "GDK_BACKEND,wayland,x11,*"
-          "QT_QPA_PLATFORM,wayland;xcb"
-          "SDL_VIDEODRIVER,wayland"
-          "CLUTTER_BACKEND,wayland"
-        ];
-        "$terminal" = "${pkgs.alacritty}/bin/alacritty";
-        "exec-once" = [
-          "${pkgs.waybar}/bin/waybar"
-          "${pkgs.fcitx5}/bin/fcitx5 -r -s 5"
-          "${pkgs.hypridle}/bin/hypridle"
-        ];
-        "$mod" = "SUPER";
-        bind = [
-          "$mod, RETURN, exec, $terminal"
-          "$mod, Q, killactive"
-          "$mod&SHIFT, Q, forcekillactive"
-          "$mod, E, exec, ${pkgs.wofi}/bin/wofi --show run"
-          "$mod, F, fullscreen, 0"
-          "$mod&SHIFT, W, movewindow, u"
-          "$mod&SHIFT, A, movewindow, l"
-          "$mod&SHIFT, S, movewindow, d"
-          "$mod&SHIFT, D, movewindow, r"
-          "$mod, W, movefocus, u"
-          "$mod, A, movefocus, l"
-          "$mod, S, movefocus, d"
-          "$mod, D, movefocus, r"
-          "$mod, H, moveactive, -25 0"
-          "$mod, J, moveactive, 0 25"
-          "$mod, K, moveactive, 0 -25"
-          "$mod, L, moveactive, 25 0"
-          "$mod&SHIFT, H, resizeactive, -25 0"
-          "$mod&SHIFT, J, resizeactive, 0 -25"
-          "$mod&SHIFT, K, resizeactive, 0 25"
-          "$mod&SHIFT, L, resizeactive, 25 0"
-          "$mod, space, togglefloating"
-          "$mod, G, togglegroup"
-          "$mod&SHIFT, G, moveoutofgroup"
-          "$mod&CTRL, W, moveintogroup, u"
-          "$mod&CTRL, A, moveintogroup, l"
-          "$mod&CTRL, S, moveintogroup, d"
-          "$mod&CTRL, D, moveintogroup, r"
-          "$mod, tab, changegroupactive, f"
-          "$mod&SHIFT, tab, changegroupactive, b"
-          "$mod&CTRL, D, movegroupwindow, f"
-          "$mod&CTRL, A, movegroupwindow, b"
-          ", XF86AudioRaiseVolume, exec, ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%+"
-          ", XF86AudioLowerVolume, exec, ${pkgs.wireplumber}/bin/wpctl set-volume @DEFAULT_AUDIO_SINK@ 2%-"
-          ", XF86AudioMute, exec, ${pkgs.wireplumber}/bin/wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
-          ", XF86AudioPlay, exec, ${pkgs.playerctl}/bin/playerctl play-pause"
-          ", XF86AudioPrev, exec, ${pkgs.playerctl}/bin/playerctl previous"
-          ", XF86AudioNext, exec, ${pkgs.playerctl}/bin/playerctl next"
-          ", Print, exec, ${pkgs.grim}/bin/grim -g \"$(${pkgs.slurp}/bin/slurp)\" -t png - | ${pkgs.wl-clipboard}/bin/wl-copy -t image/png"
-          "$mod&SHIFT, V, exec, ${pkgs.wl-clipboard}/bin/wl-paste | ${pkgs.coreutils}/bin/tee \"$(${pkgs.zenity}/bin/zenity --file-selection --save --confirm-overwrite)\""
-        ]++ (
-          builtins.concatLists (
-            builtins.genList (i:
-              [
-                "$mod, code:1${toString i}, workspace, ${toString (i+1)}"
-                "$mod SHIFT, code:1${toString i}, movetoworkspacesilent, ${toString (i+1)}"
-              ]
-            )
-            9
-          )
-        )++ [
-          "$mod, code:19, workspace, 10"
-          "$mod SHIFT, code:19, movetoworkspacesilent, 10"
-        ];
-        monitor = "eDP-1, 2256x1504, 0x0, 1.333333";
-        general = {
-          gaps_in = 0;
-          gaps_out = 0;
-        };
-        input = {
-          accel_profile = "flat";
-          sensitivity = 1.0;
-        };
-        #xwayland = {
-        #  force_zero_scaling = true;
-        #};
-      };
-    };
+  documentation.dev.enable = true;
 
-    services = {
-      hyprpolkitagent.enable = true;
-
-      hypridle = {
-        enable = true;
-      };
-    };
-
-    programs.waybar = {
-      enable = true;
-      settings = {
-	    mainBar = {
-          height = 30;
-	      spacing = 4;
-	      "modules-left" = [
-	        "hyprland/workspaces"
-	        "sway/mode"
-	        "sway/scratchpad"
-	        "custom/media"
-	      ];
-	      "modules-center" = [
-	        "sway/window"
-	      ];
-	      "modules-right" = [
-	        "mpd"
-	        "pulseaudio"
-	        "network"
-	        "cpu"
-	        "memory"
-	        "temperature"
-	        "backlight"
-	        "keyboard-state"
-	        "sway/language"
-	        "battery"
-	        "clock"
-	        "tray"
-	      ];
-	      pulseaudio = {
-	        "format" = "{volume}% {icon} {format_source}";
-            "format-bluetooth" = "{volume}% {icon} {format_source}";
-            "format-bluetooth-muted" = " {icon} {format_source}";
-            "format-muted" = " {format_source}";
-            "format-source" = "{volume}% ";
-            "format-source-muted" = "";
-            "format-icons" = {
-	          "headphone" = "";
-	          "hands-free" = "";
-	          "headset" = "";
-	          "phone" = "";
-	          "portable" = "";
-	          "car" = "";
-	          "default" = [
-	            ""
-	  	        ""
-	            ""
-	          ];
-             };
-             "on-click" = "pavucontrol";
-	      };
-	      network = {
-	        "format-wifi" = "{essid} ({signalStrength}%)";
-            "format-ethernet" = "{ipaddr}/{cidr}";
-            "tooltip-format" = "{ifname} via {gwaddr}";
-            "format-linked" = "{ifname} (No IP)";
-            "format-disconnected" = "Disconnected";
-            "format-alt" = "{ifname}: {ipaddr}/{cidr}";
-	      };
-	      battery = {
-	        states = {
-	          warning = 30;
-	  	      critical = 15;
-	        };
-	        format = "{capacity}% {icon}";
-              "format-charging" = "{capacity}% ";
-              "format-plugged" = "{capacity}% ";
-              "format-alt" = "{time} {icon}";
-	        "format-icons" = [
-	          ""
-              ""
-              ""
-              ""
-              ""
-	        ];
-	      };
-	      clock = {
-	        "tooltip-format" = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-	        "format-alt" = "{:%Y-%m-%d}";
-	        format = "{:%H:%M:%S}";
-	        interval = 1;
-	      };
-        };
-	  };
-    };
-
+  home-manager.users.${config.cos.username} = { pkgs, ... }: {
     home.stateVersion = "24.11";
   };
 

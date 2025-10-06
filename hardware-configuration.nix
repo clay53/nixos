@@ -25,11 +25,11 @@
     };
 
   fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/48efcacd-13e3-42fa-8691-0343e3d075b3";
+    { device = "/dev/disk/by-uuid/7afa7b67-4486-43a7-b58b-a7548beb4e20";
       fsType = "ext4";
     };
 
-  boot.initrd.luks.devices."luks-8f683174-f693-4185-a018-bfdbeb80b411".device = "/dev/disk/by-uuid/8f683174-f693-4185-a018-bfdbeb80b411";
+  boot.initrd.luks.devices."luks-c705edf8-6321-4956-8780-f6c00a62e77e".device = "/dev/disk/by-uuid/c705edf8-6321-4956-8780-f6c00a62e77e";
 
   swapDevices = [ ];
 
@@ -42,4 +42,8 @@
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+
+  hardware.graphics = {
+    enable = true;
+  };
 }
