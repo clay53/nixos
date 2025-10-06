@@ -196,6 +196,7 @@
       wireshark
       dotnetCorePackages.sdk_9_0_1xx-bin # for unit dev
       vscode-fhs
+      discord
     ];
     sessionVariables = {
       EDITOR = "${inputs.cnvim.packages.x86_64-linux.default}/bin/nvim";
