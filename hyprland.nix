@@ -227,12 +227,14 @@ let cfg = config.cos.hyprland; in
               "node-type" = "Audio/Sink";
               "format" = "{volume}% 🔊";
               "format-muted" = "🔇";
+              "max-volume" = 150;
               "on-click" = "pwvucontrol";
 	        };
             "wireplumber#source" = {
               "node-type" = "Audio/Source";
               "format" = "{volume}% 🎤";
               "format-muted" = "X";
+              "max-volume" = 200;
               "on-click" = "pwvucontrol";
             };
             cpu = {
