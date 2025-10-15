@@ -136,6 +136,7 @@
     "nix-command"
     "flakes"
   ];
+
   nix.settings.trusted-users = [
     "root"
     "@wheel"
@@ -234,20 +235,6 @@
       enable = true;
       package = pkgs.jdk;
     };
-    #vscode = {
-    #  enable = true;
-    #  package = pkgs.vscode-fhs;
-    #  extensions = with pkgs.vscode-extensions; [
-    #    # For Unity & C#
-    #    visualstudiotoolsforunity.vstuc
-    #    ms-dotnettools.csdevkit
-    #    ms-dotnettools.vscode-dotnet-runtime
-    #    ms-dotnettools.csharp
-
-    #    # Personalization
-    #    vscodevim.vim
-    #  ];
-    #};
     nix-ld = {
       enable = true;
       libraries = options.programs.nix-ld.libraries.default ++ [
