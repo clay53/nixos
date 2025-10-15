@@ -208,7 +208,8 @@ let cfg = config.cos.hyprland; in
 	        ];
 	        "modules-right" = [
 	          "mpd"
-	          "pulseaudio"
+	          "wireplumber#sink"
+              "wireplumber#source"
 	          "network"
 	          "cpu"
 	          "memory"
@@ -222,28 +223,18 @@ let cfg = config.cos.hyprland; in
               format-icons = [""];
               tooltip = false;
             };
-	        pulseaudio = {
-	          "format" = "{volume}% {icon} {format_source}";
-              "format-bluetooth" = "{volume}% {icon} {format_source}";
-              "format-bluetooth-muted" = " {icon} {format_source}";
-              "format-muted" = " {format_source}";
-              "format-source" = "{volume}% ";
-              "format-source-muted" = "";
-              "format-icons" = {
-	            "headphone" = "";
-	            "hands-free" = "";
-	            "headset" = "";
-	            "phone" = "";
-	            "portable" = "";
-	            "car" = "";
-	            "default" = [
-	              ""
-	    	        ""
-	              ""
-	            ];
-               };
-               "on-click" = "pavucontrol";
+	        "wireplumber#sink" = {
+              "node-type" = "Audio/Sink";
+              "format" = "{volume}% 🔊";
+              "format-muted" = "🔇";
+              "on-click" = "pwvucontrol";
 	        };
+            "wireplumber#source" = {
+              "node-type" = "Audio/Source";
+              "format" = "{volume}% 🎤";
+              "format-muted" = "X";
+              "on-click" = "pwvucontrol";
+            };
             cpu = {
               format = "{usage}% ";
             };
