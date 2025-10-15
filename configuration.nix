@@ -29,6 +29,10 @@
     };
   };
 
+  services.logind.settings.Login = {
+    HandlePowerKey="suspend";
+  };
+
   time.timeZone = "America/New_York";
 
   i18n = {

@@ -57,6 +57,8 @@ let cfg = config.cos.hyprland; in
       yaru-theme
     ];
 
+    services.hypridle.enable = true;
+
     home-manager.users.${config.cos.username} = {pkgs, ...}: {
       wayland.windowManager.hyprland = {
         enable = true;
@@ -173,9 +175,16 @@ let cfg = config.cos.hyprland; in
             ];
           };
         };
+      };
 
-        hypridle = {
-          enable = true;
+      services.hypridle = {
+        enable = true;
+        settings = {
+          general = {
+            lock_cmd = "pidof hyprlock || hyprlock";
+            before_sleep_cmd = "loginctl lock-session";
+            after_sleep_cmd = "hyprctl dispatch dms on";
+          };
         };
       };
 
