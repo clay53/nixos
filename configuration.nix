@@ -64,7 +64,7 @@
 
   cos.hyprland = {
     enable = true;
-    wallpaper = builtins.toString ./Snapchat-941139056.jpg;
+    wallpaper = builtins.toString ./TranscodedWallpaper.jpeg;
   };
 
   hardware.bluetooth.enable = true;
