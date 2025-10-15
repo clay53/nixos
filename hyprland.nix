@@ -84,7 +84,6 @@ let cfg = config.cos.hyprland; in
             "hypridle"
             "${pkgs.hyprland}/bin/hyprctl setcursor Yaru 24"
             "${pkgs.nextcloud-client}/bin/nextcloud"
-            "hyprlock"
           ];
           "$mod" = "SUPER";
           bind = [
