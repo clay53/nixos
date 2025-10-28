@@ -17,6 +17,10 @@
       url = "github:clay53/osm-bikeability";
       flake = false;
     };
+    winboat = {
+      url = "github:TibixDev/winboat";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
   outputs = { self, nixpkgs, ... }@inputs: {
     nixosConfigurations.clhickey-nixos = nixpkgs.lib.nixosSystem {

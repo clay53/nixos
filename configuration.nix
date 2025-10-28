@@ -6,9 +6,10 @@
       "${inputs.home-manager}/nixos"
       inputs.mapnix.nixosModules.default
       ./cos.nix
-      ./docker-kubernetes.nix
+      #./docker-kubernetes.nix
       ./mainWireguard.nix
       ./hyprland.nix
+      ./winboat.nix
     ];
 
   cos.username = "clhickey";
