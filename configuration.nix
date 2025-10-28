@@ -72,6 +72,10 @@
     wallpaper = builtins.toString ./TranscodedWallpaper.jpeg;
   };
 
+  # auto-mount USB drives
+  services.gvfs.enable = true;
+  services.udisks2.enable = true;
+
   hardware.bluetooth.enable = true;
 
   # For languini
