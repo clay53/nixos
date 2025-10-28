@@ -271,7 +271,7 @@ let cfg = config.cos.hyprland; in
 	        };
 	        clock = {
 	          "tooltip-format" = "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>";
-	          format = "{:%Y-%m-%d %H:%M:%S}";
+	          format = "{:%Y-%m-%d %I:%M:%S %p}";
 	          interval = 1;
 	        };
           };
