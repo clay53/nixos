@@ -26,7 +26,7 @@
     nixosConfigurations.clhickey-nixos = nixpkgs.lib.nixosSystem {
       specialArgs = { inherit inputs; };
       modules = [
-        ./configuration.nix
+        ./clhickey-nixos/configuration.nix
       ];
     };
   };

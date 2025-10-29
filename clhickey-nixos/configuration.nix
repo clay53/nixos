@@ -3,13 +3,7 @@
   imports =
     [
       ./hardware-configuration.nix
-      "${inputs.home-manager}/nixos"
-      inputs.mapnix.nixosModules.default
-      ./cos.nix
-      #./docker-kubernetes.nix
-      ./mainWireguard.nix
-      ./hyprland.nix
-      ./winboat.nix
+      ../cos.nix
     ];
 
   cos.username = "clhickey";
@@ -55,15 +49,9 @@
     hostName = config.cos.hostName;
     networkmanager.enable = true;
   };
-  
-  services.mapnix = {
-    openstreetmap-carto-src = inputs.osm-bikeability;
-    enable = false;
-  };
 
-  cos.mainWireguard = {
+  cos.wireguard = {
     enable = true;
-    ip = "10.100.0.3";
     privateKeyFile = "/home/${config.cos.username}/wireguard-keys/private";
   };
 
@@ -79,7 +67,7 @@
   hardware.bluetooth.enable = true;
 
   # For languini
-  networking.firewall.interfaces.${config.cos.mainWireguard.interface}.allowedTCPPorts = [
+  networking.firewall.interfaces.${config.cos.wireguard.interface}.allowedTCPPorts = [
     8000
     8080
   ];
@@ -94,7 +82,7 @@
       listenAddresses = [
         {
           port = 22;
-          addr = config.cos.mainWireguard.ip;
+          addr = config.cos.wireguard.clientInternalIP;
         }
       ];
     };
