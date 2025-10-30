@@ -9,6 +9,9 @@
   cos.username = "clhickey";
   cos.hostName = "clhickey-nixos";
 
+  cos.winboat.enable = true;
+  cos.docker.enable = true;
+
   boot = {
     loader = {
       systemd-boot.enable = true;

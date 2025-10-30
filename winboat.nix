@@ -8,11 +8,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    virtualisation.docker.enable = true;
-
-    users.users.${config.cos.username}.extraGroups = [
-      "docker"
-    ];
+    cos.docker.enable = true;
 
     environment.systemPackages = [
       inputs.winboat.packages.x86_64-linux.winboat

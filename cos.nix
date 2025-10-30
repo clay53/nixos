@@ -4,6 +4,7 @@
     ./hyprland.nix
     ./wireguard.nix
     ./winboat.nix
+    ./docker.nix
     "${inputs.home-manager}/nixos"
   ];
 
