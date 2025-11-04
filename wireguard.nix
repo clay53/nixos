@@ -65,6 +65,11 @@ in
       wireguard-tools
     ];
 
+    environment.etc."resolv.conf".text = ''
+      nameserver 10.100.0.1
+      nameserver 1.1.1.1
+    '';
+
     networking.wireguard = {
       enable = true;
       interfaces = {
