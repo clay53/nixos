@@ -5,6 +5,7 @@
     ./wireguard.nix
     ./winboat.nix
     ./docker.nix
+    ./remoteBuild.nix
     "${inputs.home-manager}/nixos"
   ];
 

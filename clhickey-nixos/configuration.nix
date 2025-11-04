@@ -12,6 +12,8 @@
   cos.winboat.enable = true;
   cos.docker.enable = true;
 
+  cos.remoteBuild.enable = true;
+
   boot = {
     loader = {
       systemd-boot.enable = true;
