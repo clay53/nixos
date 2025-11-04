@@ -101,8 +101,6 @@
       enable = true;
       qemu = {
         swtpm.enable = true;
-        ovmf.enable = true;
-        ovmf.packages = [ pkgs.OVMFFull.fd ];
       };
     };
     virtualbox.host = {
@@ -202,6 +200,8 @@
       discord
       aseprite
       pixelorama
+      dig
+      ncdu
     ];
     sessionVariables = {
       EDITOR = "${inputs.cnvim.packages.x86_64-linux.default}/bin/nvim";
@@ -212,7 +212,7 @@
     packages = with pkgs; [
       noto-fonts
       noto-fonts-cjk-sans
-      noto-fonts-emoji
+      noto-fonts-color-emoji
       liberation_ttf
       fira-code
       fira-code-symbols
@@ -222,7 +222,7 @@
       font-awesome
       libre-baskerville
       corefonts
-      vistafonts
+      vista-fonts
     ];
   };
 

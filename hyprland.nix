@@ -37,7 +37,7 @@ let cfg = config.cos.hyprland; in
         waylandFrontend = true;
 	    addons = with pkgs; [
           fcitx5-gtk
-          fcitx5-configtool
+          qt6Packages.fcitx5-configtool
           fcitx5-mozc
         ];
       };
@@ -55,6 +55,7 @@ let cfg = config.cos.hyprland; in
       kdePackages.ark
       kdePackages.gwenview
       yaru-theme
+      hyprpaper
     ];
 
     services.hypridle.enable = true;
