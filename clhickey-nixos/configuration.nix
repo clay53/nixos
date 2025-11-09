@@ -62,7 +62,7 @@
 
   cos.hyprland = {
     enable = true;
-    wallpaper = builtins.toString ./TranscodedWallpaper.jpeg;
+    wallpaper = builtins.toString ../TranscodedWallpaper.jpeg;
   };
 
   # auto-mount USB drives
