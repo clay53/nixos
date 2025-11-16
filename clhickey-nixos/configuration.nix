@@ -12,7 +12,7 @@
   cos.winboat.enable = true;
   cos.docker.enable = true;
 
-  cos.remoteBuild.enable = true;
+  cos.remoteBuild.enable = false;
 
   boot = {
     loader = {

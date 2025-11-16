@@ -20,5 +20,11 @@ let cfg = config.cos.remoteBuild; in
     }];
     nix.distributedBuilds = true;
     nix.settings.builders-use-substitutes = false;
+    nix.settings.trusted-public-keys = [
+      "${config.cos.wireguard.clientPubOptionsMap.nixnas.ip}:iD0dK5e3PmeldRKuQcFPfrwsMsILNvvE/joqGRluu4c="
+    ];
+    nix.settings.substituters = [
+      "ssh-ng://clhickey@${config.cos.wireguard.clientPubOptionsMap.nixnas.ip}"
+    ];
   };
 }
