@@ -6,6 +6,7 @@
     ./winboat.nix
     ./docker.nix
     ./remoteBuild.nix
+    ./gnupg.nix
     "${inputs.home-manager}/nixos"
   ];
 
